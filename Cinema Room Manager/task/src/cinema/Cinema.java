@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class Cinema {
     static String[][] grid = new String[10][10];
     static String[][] gridPrice = new String[10][10];
-    static int a, b;
+    static int a, b, totalIncome;
 
     public static void main(String[] args) {
         start();
@@ -20,27 +20,54 @@ public class Cinema {
 
         rysujSale(a, b, 1);
 
-        while (true) {
+        int numberOfPurchasedTickets = 0, currentIncome = 0;
+        Loopstart:
+        do {
             System.out.println("\n1. Show the seats");
             System.out.println("2. Buy a ticket");
+            System.out.println("3. Statistics");
             System.out.println("0. Exit");
 
             int choice = s.nextInt();
+
 
             switch (choice) {
                 case 1 : rysujSale(a, b, 3);
                     break;
                 case 2 :
-                    System.out.println("\nEnter a row number:");
-                    int c = s.nextInt();
-                    System.out.println("Enter a seat number in that row:");
-                    int d = s.nextInt();
-                    System.out.println("\nTicket price: $" + gridPrice[c][d]);
-                    rysujSale(c, d, 2);
+                    while (true) {
+                        System.out.println("\nEnter a row number:");
+                        int c = s.nextInt();
+                        System.out.println("Enter a seat number in that row:");
+                        int d = s.nextInt();
+                        if (c > a || d > b) {
+                            System.out.println("Wrong input!");
+                            continue;
+                        }
+                        if (grid[c][d].equals("B")) {
+                            System.out.println("That ticket has already been purchased!");
+                            continue;
+
+                        } else {
+                            System.out.println("\nTicket price: $" + gridPrice[c][d]);
+                            rysujSale(c, d, 2);
+                            numberOfPurchasedTickets++;
+                            currentIncome += Integer.parseInt(gridPrice[c][d]);
+                            continue Loopstart;
+                        }
+
+                    }
+                case 3 :
+                    System.out.println("Number of purchased tickets: " + numberOfPurchasedTickets);
+                    System.out.printf("Percentage: %.2f", ((numberOfPurchasedTickets / ((double) a * b)) * 100));
+                    System.out.println("%");
+                    System.out.println("Current income: $" + currentIncome);
+                    System.out.println("Total income: $" + totalIncome);
                     break;
+
                 case 0 : return;
             }
-        }
+        } while (true);
     }
 
     /**
@@ -66,13 +93,16 @@ public class Cinema {
                 grid[i][j] = "S";
                 if (x * y < 60) {
                     gridPrice[i][j] = String.valueOf(10);
+                    totalIncome += 10;
                 }
                 else {
                     if (x / 2 >= i) {
                         gridPrice[i][j] = String.valueOf(10);
+                        totalIncome += 10;
                     }
                     else {
                         gridPrice[i][j] = String.valueOf(8);
+                        totalIncome += 8;
                     }
 
                 }
